@@ -13,6 +13,29 @@ username="pi"
 pass="raspberry"
 port="22"
 
+# Payload dir to send to the target PI
+PAYLOAD="./payload/"
+
+# ------------------
+# -- Send Payload --
+# ------------------
+# Input:
+#	$1: IP
+#	$2: Port
+#	$3: Username
+#	$4: Password
+function sendPayload() {
+	# Make sure we've gotten all the right arguments
+	if [[ $# != 4 ]]; then
+		echo "Error: Expected 4 arguments to sendPayload() (got $#)"
+		exit
+	fi
+
+	# TODO: Is $payload being escaped properly? 
+	# TODO: Sending payload to $HOME on the remote machine, is there a better place for it?
+	sshpass -p "$4" scp -r "$PAYLOAD" "${3}@${1}:/home/${3}:${2}"
+}
+
 # -------------------
 # -- Display usage --
 # -------------------
