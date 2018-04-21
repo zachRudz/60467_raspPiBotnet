@@ -2,7 +2,13 @@ import sys
 import socket
 import threading
 
-port = int(sys.argv[1])
+# Validation fo command line args
+if(len(sys.argv) != 3):
+	print("Usage: python3 {} [IP to bind to] [Port to bind to]".format(sys.argv[0]))
+	sys.exit(0)
+
+ip = sys.argv[1]
+port = int(sys.argv[2])
 
 clients = []
 
@@ -62,8 +68,8 @@ def admin_thread():
 			
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-print("Binding on [{}]:{}...".format(socket.gethostname(), port))
-server.bind((socket.gethostname(), port))
+print("Binding on [{}]:{}...".format(ip, port))
+server.bind((ip, port))
 server.listen(5)
 
 # Create a new thread to handle admin interaction

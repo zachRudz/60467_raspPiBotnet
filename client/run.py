@@ -4,6 +4,11 @@ import ssl
 import socket
 import time
 
+# Validation fo command line args
+if(len(sys.argv) != 3):
+	print("Usage: python3 {} [IP to bind to] [Port to bind to]".format(sys.argv[0]))
+	sys.exit(0)
+
 class IRC_Connector(object):
 	def __init__(self, server, port):
 		self.server = server
@@ -25,7 +30,7 @@ class IRC_Connector(object):
 				return
 			except:
 				print(".", end="", flush=True)
-				time.sleep(5)
+				time.sleep(1)
 	
 
 	# Send the message on the socket.
@@ -62,7 +67,7 @@ class IRC_Bot(object):
 			
 
 # Attempt to connect to the target server, and accept it's commands
-bot = IRC_Bot("marigold", int(sys.argv[1]))
+bot = IRC_Bot(sys.argv[1], int(sys.argv[2]))
 while True:
 	bot.conn.connect()
 	bot.run()
