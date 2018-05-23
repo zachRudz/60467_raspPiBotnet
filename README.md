@@ -15,9 +15,6 @@ These instructions will get you a copy of the project up and running on your loc
 - pip3 (For installing pexpect)
 - pexpect (For the SSH botnet)
 
-```
-Give examples
-```
 
 ### Installing
 
@@ -109,7 +106,6 @@ Sending to: ('2.2.2.2', 50002)
 $ !exec ls -lah
 Sending command [ls -lah] to 1 clients...
 Sending to: ('2.2.2.2', 50002)
-$
 ```
 These commands execute on all connected target hosts. Output can be seen on the target if you were to run the client code (client/run.py) manually.
 
@@ -132,3 +128,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 * [Linux Journal](http://www.linuxjournal.com/content/validating-ip-address-bash-script) for the bash script to validate IP addresses.
 * [Charles Leifer](http://charlesleifer.com/blog/simple-botnet-written-python/) for inspiration, and for help with understanding raw python sockets.
 * [bjacharya at cybrary](https://www.cybrary.it/0p3n/python-programming-hackers-part-6-creating-ssh-botnet/) for inspiration, and for help with pexpect library.
+* Thanks to PurpleBooth for the github [README template](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2)
